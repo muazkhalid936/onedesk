@@ -75,7 +75,7 @@ export default function HowItWorks() {
                 Ready to streamline your workflow?
               </h3>
               <p className="text-gray-600 mb-6">
-                Join thousands of developers who've already made the switch to OneDesk.
+                Join thousands of developers who&apos;ve already made the switch to OneDesk.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-all">

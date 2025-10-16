@@ -30,7 +30,7 @@ export default function Comparison() {
             Why Choose OneDesk?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            See how OneDesk compares to the tools you're probably using right now.
+            See how OneDesk compares to the tools you&apos;re probably using right now.
           </p>
         </div>
 

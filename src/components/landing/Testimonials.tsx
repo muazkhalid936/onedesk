@@ -42,7 +42,7 @@ export default function Testimonials() {
             Built by Developers, for Developers
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Join thousands of development teams who've streamlined their workflow with OneDesk.
+            Join thousands of development teams who&apos;ve streamlined their workflow with OneDesk.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default function Testimonials() {
 
               {/* Quote */}
               <blockquote className="text-gray-700 mb-6 leading-relaxed">
-                "{testimonial.quote}"
+                &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
 
               {/* Author */}
@@ -103,7 +103,7 @@ export default function Testimonials() {
               Meet the Team Behind OneDesk
             </h3>
             <p className="text-gray-600 text-lg">
-              We're a team of experienced developers and product managers who got tired of juggling multiple tools. So we built the solution we always wanted.
+              We&apos;re a team of experienced developers and product managers who got tired of juggling multiple tools. So we built the solution we always wanted.
             </p>
           </div>
 

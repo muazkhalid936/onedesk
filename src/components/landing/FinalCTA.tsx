@@ -28,7 +28,7 @@ export default function FinalCTA() {
 
           {/* Subtext */}
           <p className="text-xl sm:text-2xl text-blue-100 mb-8 leading-relaxed">
-            Join thousands of developers who've streamlined their workflow and boosted productivity with OneDesk.
+            Join thousands of developers who&apos;ve streamlined their workflow and boosted productivity with OneDesk.
           </p>
 
           {/* Benefits List */}
