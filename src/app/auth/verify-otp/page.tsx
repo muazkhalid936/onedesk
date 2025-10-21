@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,34 +15,43 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { login } from "@/api/auth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
+import { verify_otp, request_otp_again } from "@/api/auth";
 
 interface ApiError {
   success: false;
   errors: {
     detail?: string[];
     email?: string[];
-    password?: string[];
+    otp?: string[];
   };
 }
 
-export default function LoginPage() {
+export default function VerifyOtpPage() {
   const router = useRouter();
-  const { saveUser } = useAuthStore();
-
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
-    password?: string;
+    otp?: string;
     general?: string;
   }>({});
 
+  useEffect(() => {
+    // Get email from session storage (set during signup)
+    const storedEmail = sessionStorage.getItem("signup_email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      // If no email found, redirect to signup
+      toast.error("Please complete signup first");
+      router.push("/auth/signup");
+    }
+  }, [router]);
+
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { email?: string; otp?: string } = {};
 
     if (!email) {
       newErrors.email = "Email is required";
@@ -49,10 +59,10 @@ export default function LoginPage() {
       newErrors.email = "Email is invalid";
     }
 
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    if (!otp) {
+      newErrors.otp = "OTP is required";
+    } else if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+      newErrors.otp = "OTP must be 6 digits";
     }
 
     setErrors(newErrors);
@@ -72,30 +82,21 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const data = await login({ email, password });
+      await verify_otp({ email, otp });
 
-      if (data) {
-        const user = {
-          user_id: data.user_id,
-          email: data.email,
-          first_name: data.first_name,
-          last_name: data.last_name,
-        };
-        saveUser(user, data.access, data.refresh);
-        toast.success("Logged in successfully!");
-        router.push("/dashboard"); // Redirect to dashboard
-      }
+      // Clear stored email
+      sessionStorage.removeItem("signup_email");
+
+      toast.success("Email verified successfully! You can now log in.");
+      router.push("/auth/login");
     } catch (error: unknown) {
-      console.error("Login error:", error);
+      console.error("OTP verification error:", error);
 
       // Handle API error response
       if (error && typeof error === "object" && "errors" in error) {
         const apiError = error as ApiError;
-        const newErrors: {
-          email?: string;
-          password?: string;
-          general?: string;
-        } = {};
+        const newErrors: { email?: string; otp?: string; general?: string } =
+          {};
 
         if (apiError.errors) {
           // Handle email errors
@@ -103,9 +104,9 @@ export default function LoginPage() {
             newErrors.email = apiError.errors.email[0];
           }
 
-          // Handle password errors
-          if (apiError.errors.password && apiError.errors.password.length > 0) {
-            newErrors.password = apiError.errors.password[0];
+          // Handle OTP errors
+          if (apiError.errors.otp && apiError.errors.otp.length > 0) {
+            newErrors.otp = apiError.errors.otp[0];
           }
 
           // Handle general/detail errors
@@ -134,15 +135,46 @@ export default function LoginPage() {
     }
   };
 
+  const handleResendOtp = async () => {
+    if (!email) {
+      toast.error("Email is required");
+      return;
+    }
+
+    setIsResending(true);
+
+    try {
+      await request_otp_again({ email });
+      toast.success("New OTP sent to your email!");
+    } catch (error: unknown) {
+      console.error("Resend OTP error:", error);
+
+      if (error && typeof error === "object" && "errors" in error) {
+        const apiError = error as ApiError;
+        if (apiError.errors?.detail && apiError.errors.detail.length > 0) {
+          toast.error(apiError.errors.detail[0]);
+        } else {
+          toast.error("Failed to resend OTP. Please try again.");
+        }
+      } else {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to resend OTP";
+        toast.error(errorMessage);
+      }
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Sign in
+            Verify Email
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to access your account
+            Enter the 6-digit code sent to your email address
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -167,41 +199,46 @@ export default function LoginPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="otp">Verification Code</Label>
               <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={errors.password ? "border-red-500" : ""}
+                id="otp"
+                type="text"
+                placeholder="Enter 6-digit code"
+                value={otp}
+                onChange={(e) =>
+                  setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                className={`text-center text-lg tracking-widest ${
+                  errors.otp ? "border-red-500" : ""
+                }`}
+                maxLength={6}
               />
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
+              {errors.otp && (
+                <p className="text-sm text-red-500">{errors.otp}</p>
               )}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Verifying..." : "Verify Email"}
             </Button>
-            <div className="text-center text-sm space-y-2">
-              <div>
-                Don&apos;t have an account?{" "}
+            <div className="flex flex-col items-center space-y-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={isResending || !email}
+                onClick={handleResendOtp}
+              >
+                {isResending ? "Resending..." : "Resend Code"}
+              </Button>
+              <div className="text-center text-sm">
+                Remember your password?{" "}
                 <Link
-                  href="/auth/signup"
+                  href="/auth/login"
                   className="text-blue-600 hover:text-blue-500 font-medium"
                 >
-                  Sign up
-                </Link>
-              </div>
-              <div>
-                Need to verify your email?{" "}
-                <Link
-                  href="/auth/request-otp"
-                  className="text-blue-600 hover:text-blue-500 font-medium"
-                >
-                  Request verification code
+                  Sign in
                 </Link>
               </div>
             </div>

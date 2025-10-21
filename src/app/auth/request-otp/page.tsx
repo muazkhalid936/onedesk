@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,45 +15,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { login } from "@/api/auth";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
+import { request_otp_again } from "@/api/auth";
 
 interface ApiError {
   success: false;
   errors: {
     detail?: string[];
     email?: string[];
-    password?: string[];
   };
 }
 
-export default function LoginPage() {
+export default function RequestOtpPage() {
   const router = useRouter();
-  const { saveUser } = useAuthStore();
-
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{
     email?: string;
-    password?: string;
     general?: string;
   }>({});
 
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { email?: string } = {};
 
     if (!email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email is invalid";
-    }
-
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
     }
 
     setErrors(newErrors);
@@ -72,40 +60,25 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const data = await login({ email, password });
+      await request_otp_again({ email });
 
-      if (data) {
-        const user = {
-          user_id: data.user_id,
-          email: data.email,
-          first_name: data.first_name,
-          last_name: data.last_name,
-        };
-        saveUser(user, data.access, data.refresh);
-        toast.success("Logged in successfully!");
-        router.push("/dashboard"); // Redirect to dashboard
-      }
+      // Store email for OTP verification
+      sessionStorage.setItem("signup_email", email);
+
+      toast.success("Verification code sent! Check your email.");
+      router.push("/auth/verify-otp");
     } catch (error: unknown) {
-      console.error("Login error:", error);
+      console.error("Request OTP error:", error);
 
       // Handle API error response
       if (error && typeof error === "object" && "errors" in error) {
         const apiError = error as ApiError;
-        const newErrors: {
-          email?: string;
-          password?: string;
-          general?: string;
-        } = {};
+        const newErrors: { email?: string; general?: string } = {};
 
         if (apiError.errors) {
           // Handle email errors
           if (apiError.errors.email && apiError.errors.email.length > 0) {
             newErrors.email = apiError.errors.email[0];
-          }
-
-          // Handle password errors
-          if (apiError.errors.password && apiError.errors.password.length > 0) {
-            newErrors.password = apiError.errors.password[0];
           }
 
           // Handle general/detail errors
@@ -139,10 +112,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Sign in
+            Request Verification Code
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to access your account
+            Enter your email address to receive a new verification code
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -157,7 +130,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={errors.email ? "border-red-500" : ""}
@@ -166,42 +139,28 @@ export default function LoginPage() {
                 <p className="text-sm text-red-500">{errors.email}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={errors.password ? "border-red-500" : ""}
-              />
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
-              )}
-            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Sending..." : "Send Verification Code"}
             </Button>
             <div className="text-center text-sm space-y-2">
               <div>
-                Don&apos;t have an account?{" "}
+                Already have a code?{" "}
                 <Link
-                  href="/auth/signup"
+                  href="/auth/verify-otp"
                   className="text-blue-600 hover:text-blue-500 font-medium"
                 >
-                  Sign up
+                  Verify now
                 </Link>
               </div>
               <div>
-                Need to verify your email?{" "}
+                Back to{" "}
                 <Link
-                  href="/auth/request-otp"
+                  href="/auth/login"
                   className="text-blue-600 hover:text-blue-500 font-medium"
                 >
-                  Request verification code
+                  Sign in
                 </Link>
               </div>
             </div>
