@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import axios from "axios"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -48,7 +49,9 @@ export default function LoginPage() {
       console.log("Login attempt:", { email, password })
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await axios.post('/auth/login', { email, password })
+      console.log("API response:", response)
+      // await new Promise(resolve => setTimeout(resolve, 1000))
       
       // Handle successful login
       toast.success("Login successful! Welcome back!")
