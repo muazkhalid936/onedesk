@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import { ChevronDown, Plus, Building2 } from 'lucide-react';
-import { useWorkspaceStore } from '@/store/useWorkspaceStore';
+import { useWorkspaceStore, Workspace } from '@/store/useWorkspaceStore';
 import { Button } from '@/components/ui/button';
 
 export default function WorkspaceSelector() {
   const { workspaces, currentWorkspace, setCurrentWorkspace } = useWorkspaceStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleWorkspaceChange = (workspace: any) => {
+  const handleWorkspaceChange = (workspace: Workspace) => {
     setCurrentWorkspace(workspace);
     setIsOpen(false);
   };

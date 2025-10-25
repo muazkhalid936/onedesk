@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { 
-  LayoutDashboard, 
   CheckSquare, 
-  Calendar, 
   Bell, 
   MessageSquare,
   Users,
@@ -43,14 +41,6 @@ export default function DashboardLayout() {
       </div>
     );
   }
-
-  const handleSectionChange = (section: DashboardSection) => {
-    if (section === 'chats') {
-      setIsChatSelectionOpen(true);
-    } else {
-      setActiveSection(section);
-    }
-  };
 
   const renderDashboardOverview = () => (
     <div className="space-y-6">

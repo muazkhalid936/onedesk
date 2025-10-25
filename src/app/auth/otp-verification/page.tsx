@@ -395,7 +395,7 @@ export default function OtpPage() {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-2 bg-white text-gray-500">
-                    Didn't receive the code?
+                    Didn&apos;t receive the code?
                   </span>
                 </div>
               </div>
@@ -452,7 +452,7 @@ export default function OtpPage() {
         {/* Help text */}
         <div className="mt-6 text-center">
           <p className="text-xs text-gray-500">
-            Check your spam folder if you don't see the email
+            Check your spam folder if you don&apos;t see the email
           </p>
         </div>
       </div>

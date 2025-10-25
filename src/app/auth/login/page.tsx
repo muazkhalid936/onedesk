@@ -7,16 +7,6 @@ import { login } from "@/api/auth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 
-interface ApiError {
-  success: false;
-  errors: {
-    detail?: string[];
-    email?: string[];
-    password?: string[];
-    message?: string;
-  };
-}
-
 export default function LoginPage() {
   const router = useRouter();
   const { saveUser } = useAuthStore();

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { 
-  Calendar as CalendarIcon, 
   Plus, 
   Video, 
   Clock, 
@@ -116,7 +115,6 @@ export default function CalendarSection() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
     
@@ -136,58 +134,6 @@ export default function CalendarSection() {
     newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
     setCurrentDate(newDate);
   };
-
-  const MeetingCard = ({ meeting }: { meeting: Meeting }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-              {meeting.title}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              {meeting.description}
-            </p>
-          </div>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            meeting.type === 'recurring' 
-              ? 'bg-blue-100 text-blue-800' 
-              : meeting.type === 'instant'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-800'
-          }`}>
-            {meeting.type}
-          </span>
-        </div>
-        
-        <div className="space-y-2 mb-3">
-          <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <Clock className="w-4 h-4 mr-2" />
-            <span>
-              {formatTime(new Date(meeting.startTime))} - {formatTime(new Date(meeting.endTime))}
-            </span>
-          </div>
-          
-          <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <Users className="w-4 h-4 mr-2" />
-            <span>{meeting.attendees.length} attendees</span>
-          </div>
-        </div>
-        
-        {meeting.meetingLink && (
-          <Button 
-            size="sm" 
-            className="w-full flex items-center justify-center space-x-2"
-            onClick={() => window.open(meeting.meetingLink, '_blank')}
-          >
-            <Video className="w-4 h-4" />
-            <span>Join Meeting</span>
-            <ExternalLink className="w-3 h-3" />
-          </Button>
-        )}
-      </CardContent>
-    </Card>
-  );
 
   const CreateMeetingForm = () => {
     const [formData, setFormData] = useState({

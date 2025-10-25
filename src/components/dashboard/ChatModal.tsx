@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { useWorkspaceStore, Chat } from '@/store/useWorkspaceStore';
 
 interface Message {
@@ -39,7 +38,7 @@ interface ChatModalProps {
 }
 
 export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
-  const { currentWorkspace, chats } = useWorkspaceStore();
+  const { chats } = useWorkspaceStore();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');

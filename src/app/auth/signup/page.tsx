@@ -6,17 +6,6 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { signup } from "@/api/auth";
 
-interface ApiError {
-  success: false;
-  errors: {
-    detail?: string[];
-    email?: string[];
-    password?: string[];
-    first_name?: string[];
-    last_name?: string[];
-  };
-}
-
 export default function SignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
