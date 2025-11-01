@@ -170,9 +170,6 @@ export default function Sidebar({
                 {isActive && !isCollapsed && (
                   <div className="w-2 h-2 bg-blue-500 rounded-full ml-auto animate-pulse"></div>
                 )}
-                {isActive && isCollapsed && (
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-l-full"></div>
-                )}
               </button>
             );
           })}

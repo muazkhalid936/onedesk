@@ -12,6 +12,7 @@ import NotificationsSection from "./NotificationsSection";
 import RoleSwitcher from "./RoleSwitcher";
 import ChatSelectionModal from "./ChatSelectionModal";
 import ChatScreen from "./ChatScreen";
+import KanbanBoard from "./kanban-board";
 
 type DashboardSection =
   | "dashboard"
@@ -43,207 +44,218 @@ export default function DashboardLayout() {
   }
 
   const renderDashboardOverview = () => (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 sm:p-6 text-white">
-        <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">
-          Welcome back, {currentUser.name}!
+    // <div className="space-y-4 sm:space-y-6">
+    //   {/* Welcome Section */}
+    //   <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 sm:p-6 text-white">
+    //     <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">
+    //       Welcome back, {currentUser.name}!
+    //     </h1>
+    //     <p className="text-sm sm:text-base text-blue-100">
+    //       You&apos;re working in <strong>{currentWorkspace.name}</strong>{" "}
+    //       workspace
+    //     </p>
+    //   </div>
+
+    //   {/* Quick Stats */}
+    //   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+    //     <Card>
+    //       <CardContent className="p-3 sm:p-4 md:p-6">
+    //         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
+    //           <div className="p-2 sm:p-3 bg-blue-100 rounded-lg mb-2 sm:mb-0">
+    //             <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
+    //           </div>
+    //           <div className="min-w-0">
+    //             <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+    //               Active Tasks
+    //             </p>
+    //             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+    //               {
+    //                 currentWorkspace.tasks.filter((t) => t.status !== "done")
+    //                   .length
+    //               }
+    //             </p>
+    //           </div>
+    //         </div>
+    //       </CardContent>
+    //     </Card>
+
+    //     <Card>
+    //       <CardContent className="p-3 sm:p-4 md:p-6">
+    //         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
+    //           <div className="p-2 sm:p-3 bg-green-100 rounded-lg mb-2 sm:mb-0">
+    //             <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
+    //           </div>
+    //           <div className="min-w-0">
+    //             <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+    //               Completed
+    //             </p>
+    //             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+    //               {
+    //                 currentWorkspace.tasks.filter((t) => t.status === "done")
+    //                   .length
+    //               }
+    //             </p>
+    //           </div>
+    //         </div>
+    //       </CardContent>
+    //     </Card>
+
+    //     <Card>
+    //       <CardContent className="p-3 sm:p-4 md:p-6">
+    //         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
+    //           <div className="p-2 sm:p-3 bg-purple-100 rounded-lg mb-2 sm:mb-0">
+    //             <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600" />
+    //           </div>
+    //           <div className="min-w-0">
+    //             <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+    //               Active Chats
+    //             </p>
+    //             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+    //               {currentWorkspace.chats.length}
+    //             </p>
+    //           </div>
+    //         </div>
+    //       </CardContent>
+    //     </Card>
+
+    //     <Card>
+    //       <CardContent className="p-3 sm:p-4 md:p-6">
+    //         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
+    //           <div className="p-2 sm:p-3 bg-orange-100 rounded-lg mb-2 sm:mb-0">
+    //             <Users className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
+    //           </div>
+    //           <div className="min-w-0">
+    //             <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
+    //               Team Members
+    //             </p>
+    //             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+    //               {currentWorkspace.members.length}
+    //             </p>
+    //           </div>
+    //         </div>
+    //       </CardContent>
+    //     </Card>
+    //   </div>
+
+    //   {/* Recent Activity */}
+    //   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+    //     <Card>
+    //       <CardHeader className="p-4 sm:p-6">
+    //         <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+    //           <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+    //           <span>Recent Tasks</span>
+    //         </CardTitle>
+    //       </CardHeader>
+    //       <CardContent className="p-4 sm:p-6 pt-0">
+    //         <div className="space-y-3 sm:space-y-4">
+    //           {currentWorkspace.tasks
+    //             .sort(
+    //               (a, b) =>
+    //                 new Date(b.createdAt).getTime() -
+    //                 new Date(a.createdAt).getTime()
+    //             )
+    //             .slice(0, 5)
+    //             .map((task) => (
+    //               <div
+    //                 key={task.id}
+    //                 className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
+    //               >
+    //                 <div className="flex-1 min-w-0 mr-2">
+    //                   <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">
+    //                     {task.title}
+    //                   </h4>
+    //                   <p className="text-xs sm:text-sm text-gray-600 truncate">
+    //                     Assigned to{" "}
+    //                     {
+    //                       currentWorkspace.members.find(
+    //                         (m) => m.id === task.assignedTo
+    //                       )?.name
+    //                     }
+    //                   </p>
+    //                 </div>
+    //                 <div
+    //                   className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+    //                     task.status === "done"
+    //                       ? "bg-green-100 text-green-800"
+    //                       : task.status === "in_progress"
+    //                       ? "bg-blue-100 text-blue-800"
+    //                       : task.status === "review"
+    //                       ? "bg-yellow-100 text-yellow-800"
+    //                       : "bg-gray-100 text-gray-800"
+    //                   }`}
+    //                 >
+    //                   {task.status.replace("_", " ")}
+    //                 </div>
+    //               </div>
+    //             ))}
+    //         </div>
+    //       </CardContent>
+    //     </Card>
+
+    //     <Card>
+    //       <CardHeader className="p-4 sm:p-6">
+    //         <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+    //           <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+    //           <span>Recent Chats</span>
+    //         </CardTitle>
+    //       </CardHeader>
+    //       <CardContent className="p-4 sm:p-6 pt-0">
+    //         <div className="space-y-3 sm:space-y-4">
+    //           {currentWorkspace.chats
+    //             .sort(
+    //               (a, b) =>
+    //                 new Date(b.lastActivity).getTime() -
+    //                 new Date(a.lastActivity).getTime()
+    //             )
+    //             .slice(0, 5)
+    //             .map((chat) => (
+    //               <div
+    //                 key={chat.id}
+    //                 className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+    //                 onClick={() => {
+    //                   setSelectedChatId(chat.id);
+    //                   setSelectedChatType(chat.type);
+    //                   setActiveSection("chat");
+    //                 }}
+    //               >
+    //                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+    //                   <span className="text-white text-xs sm:text-sm font-bold">
+    //                     {chat.name
+    //                       .split(" ")
+    //                       .map((n) => n[0])
+    //                       .join("")}
+    //                   </span>
+    //                 </div>
+    //                 <div className="flex-1 min-w-0">
+    //                   <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">
+    //                     {chat.name}
+    //                   </h4>
+    //                   <p className="text-xs sm:text-sm text-gray-600 truncate">
+    //                     {chat.lastMessage?.content || "No messages yet"}
+    //                   </p>
+    //                 </div>
+    //                 {chat.unreadCount > 0 && (
+    //                   <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full flex-shrink-0">
+    //                     {chat.unreadCount}
+    //                   </span>
+    //                 )}
+    //               </div>
+    //             ))}
+    //         </div>
+    //       </CardContent>
+    //     </Card>
+    //   </div>
+    // </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Project Board
         </h1>
-        <p className="text-sm sm:text-base text-blue-100">
-          You&apos;re working in <strong>{currentWorkspace.name}</strong>{" "}
-          workspace
+        <p className="text-muted-foreground">
+          Manage your tasks and track progress
         </p>
       </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-        <Card>
-          <CardContent className="p-3 sm:p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
-              <div className="p-2 sm:p-3 bg-blue-100 rounded-lg mb-2 sm:mb-0">
-                <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
-                  Active Tasks
-                </p>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                  {
-                    currentWorkspace.tasks.filter((t) => t.status !== "done")
-                      .length
-                  }
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-3 sm:p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
-              <div className="p-2 sm:p-3 bg-green-100 rounded-lg mb-2 sm:mb-0">
-                <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
-                  Completed
-                </p>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                  {
-                    currentWorkspace.tasks.filter((t) => t.status === "done")
-                      .length
-                  }
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-3 sm:p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
-              <div className="p-2 sm:p-3 bg-purple-100 rounded-lg mb-2 sm:mb-0">
-                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
-                  Active Chats
-                </p>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                  {currentWorkspace.chats.length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-3 sm:p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-3 md:space-x-4">
-              <div className="p-2 sm:p-3 bg-orange-100 rounded-lg mb-2 sm:mb-0">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">
-                  Team Members
-                </p>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                  {currentWorkspace.members.length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
-              <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Recent Tasks</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="space-y-3 sm:space-y-4">
-              {currentWorkspace.tasks
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .slice(0, 5)
-                .map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
-                  >
-                    <div className="flex-1 min-w-0 mr-2">
-                      <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">
-                        {task.title}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-gray-600 truncate">
-                        Assigned to{" "}
-                        {
-                          currentWorkspace.members.find(
-                            (m) => m.id === task.assignedTo
-                          )?.name
-                        }
-                      </p>
-                    </div>
-                    <div
-                      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                        task.status === "done"
-                          ? "bg-green-100 text-green-800"
-                          : task.status === "in_progress"
-                          ? "bg-blue-100 text-blue-800"
-                          : task.status === "review"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {task.status.replace("_", " ")}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
-              <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Recent Chats</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="space-y-3 sm:space-y-4">
-              {currentWorkspace.chats
-                .sort(
-                  (a, b) =>
-                    new Date(b.lastActivity).getTime() -
-                    new Date(a.lastActivity).getTime()
-                )
-                .slice(0, 5)
-                .map((chat) => (
-                  <div
-                    key={chat.id}
-                    className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-                    onClick={() => {
-                      setSelectedChatId(chat.id);
-                      setSelectedChatType(chat.type);
-                      setActiveSection("chat");
-                    }}
-                  >
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-xs sm:text-sm font-bold">
-                        {chat.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">
-                        {chat.name}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-gray-600 truncate">
-                        {chat.lastMessage?.content || "No messages yet"}
-                      </p>
-                    </div>
-                    {chat.unreadCount > 0 && (
-                      <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full flex-shrink-0">
-                        {chat.unreadCount}
-                      </span>
-                    )}
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <KanbanBoard />
     </div>
   );
 
