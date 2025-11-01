@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { login } from "@/api/auth";
@@ -9,17 +9,63 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { saveUser } = useAuthStore();
+  const { saveUser, isAuthenticated } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
     general?: string;
   }>({});
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    // Small delay to allow store to hydrate from localStorage
+    const timer = setTimeout(() => {
+      setIsCheckingAuth(false);
+      if (isAuthenticated) {
+        router.push("/dashboard");
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, router]);
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl mb-4">
+            <svg
+              className="animate-spin h-8 w-8 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -69,7 +115,7 @@ export default function LoginPage() {
 
       // Handle API error response
       let errorMessage = "An unexpected error occurred";
-      
+
       if (error && typeof error === "object") {
         // Check if it's the API error response format
         if ("message" in error && typeof error.message === "string") {
